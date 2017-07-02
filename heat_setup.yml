@@ -1,0 +1,73 @@
+- name: Configure heat network
+  hosts: undercloud
+  vars:
+    ansible_python_interpreter: /var/tmp/venv_shade/bin/python
+    overcloud_rc: ~/overcloudrc.v3
+  gather_facts: no
+  any_errors_fatal: true
+  tasks:
+    - shell: |
+        source {{ overcloud_rc }}
+        echo "
+        auth_url: $OS_AUTH_URL
+        username: $OS_USERNAME
+        password: $OS_PASSWORD
+        project_name: ${OS_PROJECT_NAME:-$OS_TENANT_NAME}
+        "
+        if [ -n "$OS_PROJECT_DOMAIN_NAME" ]; then
+            echo "project_domain_name: $OS_PROJECT_DOMAIN_NAME"
+        fi
+        if [ -n "$OS_USER_DOMAIN_NAME" ]; then
+            echo "user_domain_name: $OS_USER_DOMAIN_NAME"
+        fi
+      register: creds
+    - set_fact:
+        os_creds: "{{ creds.stdout | from_yaml }}"
+    - set_fact:
+        env:
+            OS_AUTH_TYPE: password
+            OS_AUTH_URL: "{{ os_creds.auth_url }}"
+            OS_CLOUDNAME: overcloud
+            OS_IDENTITY_API_VERSION: 3
+            OS_NO_CACHE: True
+            OS_PASSWORD: "{{ os_creds.password }}"
+            OS_PROJECT_DOMAIN_NAME: Default
+            OS_PROJECT_NAME: "{{ os_creds.project_name }}"
+            OS_USERNAME: "{{ os_creds.username }}"
+            OS_USER_DOMAIN_NAME: Default
+    - name: Configure heat network on overcloud
+      os_network:
+        cloud: overcloud
+        name: heat-net
+    - name: Configure heat subnet on heat network
+      os_subnet:
+        network_name: heat-net
+        name: heat-subnet
+        cidr: 10.0.5.0/24
+        auth: "{{ os_creds }}"
+    # TODO skip these settings if router exist
+    - name: Configure heat router
+      os_router:
+        name: router1
+        auth: "{{ os_creds }}"
+        interfaces: 
+          - heat-subnet
+    - name: Configure heat keypair 
+      os_keypair:
+        name: heat_keypair
+        auth: "{{ os_creds }}"
+    - name: Configure heat m1.small flavor 
+      os_nova_flavor:
+        ram: 2048
+        disk: 7
+        vcpus: 1
+        name: m1.small
+        auth: "{{ os_creds }}"
+    - name: create m1.tiny flavor
+      os_nova_flavor:
+        ram:  512 
+        disk: 7
+        vcpus: 1
+        name: m1.tiny
+        auth: "{{ os_creds }}"
+        
