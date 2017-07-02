@@ -1,0 +1,3 @@
+cirros_url: http://ikook.tlv.redhat.com/gen_images/cloud/cirros-0.3.4-x86_64-disk.img
+fedora_url: http://ikook.tlv.redhat.com/gen_images/cloud/Fedora-Atomic-25-20161207.0.x86_64.qcow2
+
