@@ -1,40 +1,39 @@
-- name: Configure heat network
-  hosts: undercloud
+- include: auth.yml
+- hosts: undercloud
   vars:
     ansible_python_interpreter: /var/tmp/venv_shade/bin/python
-    overcloud_rc: ~/overcloudrc.v3
   gather_facts: no
   any_errors_fatal: true
   tasks:
-    - shell: |
-        source {{ overcloud_rc }}
-        echo "
-        auth_url: $OS_AUTH_URL
-        username: $OS_USERNAME
-        password: $OS_PASSWORD
-        project_name: ${OS_PROJECT_NAME:-$OS_TENANT_NAME}
-        "
-        if [ -n "$OS_PROJECT_DOMAIN_NAME" ]; then
-            echo "project_domain_name: $OS_PROJECT_DOMAIN_NAME"
-        fi
-        if [ -n "$OS_USER_DOMAIN_NAME" ]; then
-            echo "user_domain_name: $OS_USER_DOMAIN_NAME"
-        fi
-      register: creds
-    - set_fact:
-        os_creds: "{{ creds.stdout | from_yaml }}"
-    - set_fact:
-        env:
-            OS_AUTH_TYPE: password
-            OS_AUTH_URL: "{{ os_creds.auth_url }}"
-            OS_CLOUDNAME: overcloud
-            OS_IDENTITY_API_VERSION: 3
-            OS_NO_CACHE: True
-            OS_PASSWORD: "{{ os_creds.password }}"
-            OS_PROJECT_DOMAIN_NAME: Default
-            OS_PROJECT_NAME: "{{ os_creds.project_name }}"
-            OS_USERNAME: "{{ os_creds.username }}"
-            OS_USER_DOMAIN_NAME: Default
+    - include_vars:
+        file: images.yml
+        name: images
+    - name: download cirros image
+      get_url:
+        url: "{{ images.cirros_url }}"
+        dest: /tmp/cirros-0.3.4-x86_64-disk.img
+    - name: download fedora image
+      get_url:
+        url: "{{ images.fedora_url }}"
+        dest: /tmp/Fedora-Atomic-25-20161207.0.x86_64.qcow2
+    - name: upload cirros image
+      os_image:
+        auth: "{{ os_creds }}"
+        name: heat_cirros_image
+        container_format: bare
+        is_public: yes
+        disk_format: qcow2
+        filename: /tmp/cirros-0.3.4-x86_64-disk.img
+        state: present
+    - name: upload fedora image
+      os_image:
+        auth: "{{ os_creds }}"
+        name: heat_fedora_image
+        container_format: bare
+        is_public: yes
+        disk_format: qcow2
+        filename: /tmp/Fedora-Atomic-25-20161207.0.x86_64.qcow2
+        state: present
     - name: Configure heat network on overcloud
       os_network:
         cloud: overcloud
@@ -45,7 +44,6 @@
         name: heat-subnet
         cidr: 10.0.5.0/24
         auth: "{{ os_creds }}"
-    # TODO skip these settings if router exist
     - name: Configure heat router
       os_router:
         name: router1
