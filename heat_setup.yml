@@ -63,9 +63,17 @@
         auth: "{{ os_creds }}"
     - name: create m1.tiny flavor
       os_nova_flavor:
-        ram:  512 
+        ram:  512
         disk: 7
         vcpus: 1
         name: m1.tiny
         auth: "{{ os_creds }}"
+    - name: Modify testr regex to fix API failures
+      ini_file:
+        path: ./tempest-dir/.testr.conf
+        section: DEFAULT
+        option: group_regex
+        value: heat_integrationtests\\.api\\.test_heat_api(?:\\.|_)([^_]+)
+        mode: 0600
+        backup: yes
         
