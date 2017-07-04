@@ -76,4 +76,5 @@
         value: heat_integrationtests\\.api\\.test_heat_api(?:\\.|_)([^_]+)
         mode: 0600
         backup: yes
+        no_extra_spaces: yes
         
