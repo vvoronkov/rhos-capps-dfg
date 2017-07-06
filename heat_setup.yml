@@ -1,4 +1,5 @@
 - include: auth.yml
+- include: auth_demo.yml
 - hosts: undercloud
   vars:
     ansible_python_interpreter: /var/tmp/venv_shade/bin/python
@@ -36,18 +37,18 @@
         state: present
     - name: Configure heat network on overcloud
       os_network:
-        cloud: overcloud
         name: heat-net
+        auth: "{{ os_demo }}"
     - name: Configure heat subnet on heat network
       os_subnet:
         network_name: heat-net
         name: heat-subnet
         cidr: 10.0.5.0/24
-        auth: "{{ os_creds }}"
+        auth: "{{ os_demo }}"
     - name: Configure heat router
       os_router:
         name: router1
-        auth: "{{ os_creds }}"
+        auth: "{{ os_demo }}"
         interfaces: 
           - heat-subnet
     - name: Configure heat keypair 
