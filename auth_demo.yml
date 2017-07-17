@@ -1,0 +1,18 @@
+- hosts: undercloud
+  tasks:
+  - name: grab auth data from openstackrc for demo project
+    vars:
+        overcloud_rc: ~/overcloudrc
+    shell: |
+        source {{ overcloud_rc }}
+        echo "
+        auth_url: $OS_AUTH_URL
+        username: demo
+        password: secrete
+        project_name: demo
+        "
+    register: creds
+  - set_fact:
+      os_demo: "{{ creds.stdout | from_yaml }}"
+        
+

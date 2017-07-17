@@ -49,13 +49,13 @@
       os_router:
         name: router1
         auth: "{{ os_demo }}"
-        interfaces: 
+        interfaces:
           - heat-subnet
-    - name: Configure heat keypair 
+    - name: Configure heat keypair
       os_keypair:
         name: heat_keypair
-        auth: "{{ os_creds }}"
-    - name: Configure heat m1.small flavor 
+        auth: "{{ os_demo }}"
+    - name: Configure heat m1.small flavor
       os_nova_flavor:
         ram: 2048
         disk: 7
@@ -69,13 +69,13 @@
         vcpus: 1
         name: m1.tiny
         auth: "{{ os_creds }}"
-    - name: Modify testr regex to fix API failures
-      ini_file:
-        path: ./tempest-dir/.testr.conf
-        section: DEFAULT
-        option: group_regex
-        value: heat_integrationtests\\.api\\.test_heat_api(?:\\.|_)([^_]+)
-        mode: 0600
-        backup: yes
-        no_extra_spaces: yes
+    # - name: Modify testr regex to fix API failures
+    #   ini_file:
+    #     path: ./tempest-dir/.testr.conf
+    #     section: DEFAULT
+    #     option: group_regex
+    #     value: heat_integrationtests\\.api\\.test_heat_api(?:\\.|_)([^_]+)
+    #     mode: 0600
+    #     backup: yes
+    #     no_extra_spaces: yes
         
