@@ -1,0 +1,29 @@
+---
+# modify controller heat setup adopt, abandon, hidden tags
+- hosts: controller
+  vars:
+    params:
+      - enable_stack_adopt
+      - enable_stack_abandon
+  tasks:
+    - name: modify heat.conf
+      ini_file:
+        path: /etc/heat/heat.conf
+        section: DEFAULT
+        option: "{{ item }}"
+        value: true
+        mode: 0640
+        backup: yes
+      with_items: "{{ params }}"
+    - name: modify tags to hidden
+      ini_file:
+        path: /etc/heat/heat.conf
+        section: DEFAULT
+        option: hidden_stack_tags
+        value: hidden
+        mode: 0640
+        backup: yes
+    - name: restart heat service
+      service:
+        name: openstack-heat-engine
+        state: restarted
