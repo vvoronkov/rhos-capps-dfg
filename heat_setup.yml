@@ -1,8 +1,6 @@
 - include: auth.yml
 - include: auth_demo.yml
 - hosts: undercloud
-  vars:
-    ansible_python_interpreter: /home/stack/ir_venv/bin/python
   gather_facts: no
   any_errors_fatal: true
   tasks:
