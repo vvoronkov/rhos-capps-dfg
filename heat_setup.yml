@@ -71,7 +71,7 @@
         auth: "{{ os_creds }}"
     - name: add swift role to demo user
       os_user_role:
-        auth: "{{ os_demo }}"
+        auth: "{{ os_creds }}"
         user: demo
         role: swiftoperator
         project: demo
