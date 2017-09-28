@@ -28,7 +28,7 @@
         state: present
     - name: upload fedora image
       os_image:
-        auth: "{{ os_creds }}"
+        auth: "{{ os_demo }}"
         name: heat_fedora_image
         container_format: bare
         is_public: yes
