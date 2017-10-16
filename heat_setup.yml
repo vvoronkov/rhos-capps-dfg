@@ -20,6 +20,7 @@
     - name: upload cirros image
       os_image:
         auth: "{{ os_creds }}"
+        id: 1 # a workaround until ansible 2.4.1 will be released https://github.com/ansible/ansible/issues/29145
         name: heat_cirros_image
         container_format: bare
         is_public: yes
@@ -29,6 +30,7 @@
     - name: upload fedora image
       os_image:
         auth: "{{ os_creds }}"
+        id: 2 # a workaround until ansible 2.4.1 will be released https://github.com/ansible/ansible/issues/29145
         name: heat_fedora_image
         container_format: bare
         is_public: yes
