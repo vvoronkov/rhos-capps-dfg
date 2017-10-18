@@ -71,11 +71,3 @@
         vcpus: 1
         name: m1.tiny
         auth: "{{ os_creds }}"
-    - name: add swift role to demo user
-      os_user_role:
-        auth: "{{ os_creds }}"
-        user: demo
-        role: swiftoperator
-        project: demo
-      ignore_errors: yes
-
