@@ -71,3 +71,15 @@
         vcpus: 1
         name: m1.tiny
         auth: "{{ os_creds }}"
+    - name: add swiftoperator role to demo user
+      shell: |
+        openstack role add --user demo --project demo swiftoperator
+      auth: "{{ os_demo }}"
+    - name: modify nova network to public
+      shell: |
+        network=\$(openstack network list | grep -v ID | awk '{{print \$4}}' | tr -d '[:space:]')
+        if [[ "\$network" != "public" ]]; then openstack network set nova --name public; fi
+      auth: "{{ os_creds }}"
+
+
+
