@@ -79,8 +79,8 @@
     - name: modify nova network to public
       shell: |
         . /home/stack/overcloudrc.v3
-        network="$(openstack network show -c name --format value public)"
-        if [[ "$network" != "public" ]]; then openstack network set nova --name public; fi
+        network="$(openstack network show -c name --format value public | tr -d '[:space:]')"
+        if [[ "$network" != "public" ]]; then openstack network set $network --name public; fi
       auth: "{{ os_demo }}"
       ignore_errors: yes
 
