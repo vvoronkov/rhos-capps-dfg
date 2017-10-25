@@ -71,6 +71,15 @@
         vcpus: 1
         name: m1.tiny
         auth: "{{ os_creds }}"
+    - name: set group regex into testr.conf
+      ini_file:
+        path: /home/stack/tempest-dir/.testr.conf
+        no_extra_spaces: yes
+        section: DEFAULT
+        option: group_regex
+        value: heat_integrationtests\\.api\\.test_heat_api(?:\\.|_)([^_]+)
+        mode: 0642
+        backup: yes
     - name: add swiftoperator role to demo user
       shell: |
         . /home/stack/overcloudrc.v3
