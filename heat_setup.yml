@@ -77,7 +77,7 @@
         no_extra_spaces: yes
         section: DEFAULT
         option: group_regex
-        value: heat_integrationtests\\.api\\.test_heat_api(?:\\.|_)([^_]+)
+        value: heat_integrationtests\.api\.test_heat_api(?:\.|_)([^_]+)
         mode: 0642
         backup: yes
     - name: add swiftoperator role to demo user

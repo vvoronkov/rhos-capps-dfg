@@ -1,0 +1,29 @@
+heat_template_version: pike
+description: Deploying heat test network for routed networks
+
+resources:
+  segment:
+    type: OS::Neutron::Segment
+    properties:
+      network: {get_resource: private_network}
+      network_type: vxlan
+      segmentation_id: 101
+
+  private_network:
+    type: OS::Neutron::Net
+    properties:
+      name: heat_net
+      shared: false
+
+  private_subnet:
+      type: OS::Neutron::Subnet
+      properties:
+        allocation_pools: [{"start": 10.0.3.20, "end":10.0.3.150}]
+        host_routes: [{"destination": 10.0.4.0/24, "nexthop": 10.0.3.20}]
+        segment: {get_resource: segment}
+        cidr: 10.0.3.0/24
+        dns_nameservers: [8.8.8.8]
+        enable_dhcp: True
+        gateway_ip: 10.0.3.1
+        ip_version: 4
+        network: {get_resource: private_network}
