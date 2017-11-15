@@ -20,7 +20,6 @@
     - name: upload cirros image
       os_image:
         auth: "{{ os_creds }}"
-        id: 13e4c9b6-b73b-4770-9067-bfe2c107c49c # a workaround until ansible 2.4.1 will be released https://github.com/ansible/ansible/issues/29145
         name: heat_cirros_image
         container_format: bare
         is_public: yes
