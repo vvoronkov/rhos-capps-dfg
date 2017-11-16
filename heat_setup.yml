@@ -16,7 +16,7 @@
     - name: download fedora image
       get_url:
         url: "{{ images.fedora_url }}"
-        dest: /tmp/Fedora-Atomic-25-20161207.0.x86_64.qcow2
+        dest: /tmp/
     - name: upload cirros image
       os_image:
         auth: "{{ os_creds }}"
@@ -29,12 +29,11 @@
     - name: upload fedora image
       os_image:
         auth: "{{ os_creds }}"
-        id: 7f862026-9988-456c-97f7-9a16e93189cd # a workaround until ansible 2.4.1 will be released https://github.com/ansible/ansible/issues/29145
         name: heat_fedora_image
         container_format: bare
         is_public: yes
         disk_format: qcow2
-        filename: /tmp/Fedora-Atomic-25-20161207.0.x86_64.qcow2
+        filename: /tmp/Fedora-Cloud-Base-27-1.6.x86_64.qcow2
         state: present
     - name: Configure heat network on overcloud
       os_network:
