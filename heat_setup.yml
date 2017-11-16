@@ -33,7 +33,7 @@
         container_format: bare
         is_public: yes
         disk_format: qcow2
-        filename: /tmp/Fedora-Cloud-Base-27-1.6.x86_64.qcow2
+        filename: /tmp/fedora-cloud-base-25-jenkins.qcow2
         state: present
     - name: Configure heat network on overcloud
       os_network:
