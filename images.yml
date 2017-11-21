@@ -1,3 +1,3 @@
-cirros_url: http://ikook.tlv.redhat.com/gen_images/cloud/cirros-0.3.4-x86_64-disk.img
+cirros_url: http://ikook.tlv.redhat.com/gen_images/cloud/cirros-0.3.5-x86_64-disk.img
 fedora_url: http://ikook.tlv.redhat.com/uploads/InfraRed/Images/fedora-cloud-base-25-jenkins.qcow2
 
