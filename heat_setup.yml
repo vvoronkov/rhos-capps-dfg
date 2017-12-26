@@ -1,5 +1,11 @@
-- include: auth.yml
 - include: auth_demo.yml
+- include: custom_facts.yml
+- include: auth_old.yml
+  when:
+   - ansible_local.custom.rhos.version == "8-director" or ansible_local.custom.rhos.version == "9-director"
+- include: auth.yml
+  when:
+   - ansible_local.custom.rhos.version == "10" or ansible_local.custom.rhos.version == "11" or ansible_local.custom.rhos.version == "12"
 - hosts: undercloud
   vars:
     ansible_python_interpreter: "/home/stack/ir_venv/bin/python"
@@ -9,34 +15,26 @@
     - include_vars:
         file: images.yml
         name: images
-    - name: download cirros image
+    - name: download cirros and Fedora images
       get_url:
-        url: "{{ images.cirros_url }}"
-        dest: /tmp/cirros-0.3.4-x86_64-disk.img
-    - name: download fedora image
-      get_url:
-        url: "{{ images.fedora_url }}"
-        dest: /tmp/
-    - name: upload cirros image
+        url: "{{ item.url }}"
+        dest: "{{ item.dest }}"
+      with_items:
+        - {url: "{{ images.cirros_url }}", dest: '/tmp/cirros-0.3.4-x86_64-disk.img' }
+        - {url: "{{ images.fedora_url }}", dest: '/tmp/fedora-cloud-base-25-jenkins.qcow2' }
+    - name: upload cirros and Fedora images
       os_image:
         auth: "{{ os_creds }}"
-        name: heat_cirros_image
+        name: "{{ item.name }}"
         container_format: bare
         is_public: yes
         disk_format: qcow2
-        filename: /tmp/cirros-0.3.4-x86_64-disk.img
+        filename: "{{ item.filename }}"
         state: present
         validate_certs: no
-    - name: upload fedora image
-      os_image:
-        auth: "{{ os_creds }}"
-        name: heat_fedora_image
-        container_format: bare
-        is_public: yes
-        disk_format: qcow2
-        filename: /tmp/fedora-cloud-base-25-jenkins.qcow2
-        state: present
-        validate_certs: no
+      with_items:
+        - {name: 'heat_cirros_image', filename: '/tmp/cirros-0.3.4-x86_64-disk.img' }
+        - {name: 'heat_fedora_image', filename: '/tmp/fedora-cloud-base-25-jenkins.qcow2' }
     - name: Configure heat network on overcloud
       os_network:
         validate_certs: no
@@ -88,15 +86,13 @@
         backup: yes
     - name: add swiftoperator role to demo user
       shell: |
-        . /home/stack/overcloudrc.v3
+        . /home/stack/overcloudrc
         openstack role add --user demo --project demo swiftoperator
-      auth: "{{ os_demo }}"
     - name: modify nova network to public
       shell: |
-        . /home/stack/overcloudrc.v3
+        . /home/stack/overcloudrc
         network="$(openstack network show -c name --format value public | tr -d '[:space:]')"
         if [[ "$network" != "public" ]]; then openstack network set nova --name public; fi
-      auth: "{{ os_demo }}"
       ignore_errors: yes
 
 
