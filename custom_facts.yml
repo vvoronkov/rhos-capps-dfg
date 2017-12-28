@@ -11,6 +11,8 @@
       shell: |
         rhos-release -L | sed -n 2p | tr -d [:space:]
       register: rhos_version
+    - debug:
+      msg: "The remote custom face is {{ ansible_local.custom.rhos.version }} and {{ rhos_version }}"
     - name: Create the remote directory
       file:
         state: directory

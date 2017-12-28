@@ -1,3 +1,4 @@
+- hosts: undercloud
 - include: auth_demo.yml
 - include: custom_facts.yml
 - include: auth_old.yml
@@ -6,7 +7,6 @@
 - include: auth.yml
   when:
    - ansible_local.custom.rhos.version == "10" or ansible_local.custom.rhos.version == "11" or ansible_local.custom.rhos.version == "12"
-- hosts: undercloud
   vars:
     ansible_python_interpreter: "/home/stack/ir_venv/bin/python"
   gather_facts: no
