@@ -1,5 +1,3 @@
-- hosts: undercloud
-  tasks:
   - name: grab auth data from openstackrc for demo project
     vars:
         overcloud_rc: ~/overcloudrc

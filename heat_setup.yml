@@ -1,17 +1,32 @@
-- hosts: undercloud
-- include: auth_demo.yml
-- include: custom_facts.yml
-- include: auth_old.yml
-  when:
-   - ansible_local.custom.rhos.version == "8-director" or ansible_local.custom.rhos.version == "9-director"
-- include: auth.yml
-  when:
-   - ansible_local.custom.rhos.version == "10" or ansible_local.custom.rhos.version == "11" or ansible_local.custom.rhos.version == "12"
+- name: "heat setup"
+  hosts: undercloud   
   vars:
     ansible_python_interpreter: "/home/stack/ir_venv/bin/python"
-  gather_facts: no
+  gather_facts: yes
   any_errors_fatal: true
   tasks:
+    - name: Run auth demo
+      include: auth_demo.yml
+
+    - name: Run custom facts
+      include: custom_facts.yml
+      become: yes
+      become_method: sudo
+      vars:
+        remote_dir: /etc/ansible/facts.d
+        facts_file: custom.fact
+
+
+    - name: Run auto old
+      include: auth_old.yml
+      when:
+        - ansible_local.custom.rhos.version == "8-director" or ansible_local.custom.rhos.version == "9-director"
+
+    - name: run auth
+      include: auth.yml
+      when:
+        - ansible_local.custom.rhos.version == "10" or ansible_local.custom.rhos.version == "11" or ansible_local.custom.rhos.version == "12"
+
     - include_vars:
         file: images.yml
         name: images
