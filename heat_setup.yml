@@ -2,7 +2,7 @@
   hosts: undercloud   
   vars:
     ansible_python_interpreter: "/home/stack/ir_venv/bin/python"
-  gather_facts: no
+  gather_facts: yes
   any_errors_fatal: true
   tasks:
     - name: Run auth demo

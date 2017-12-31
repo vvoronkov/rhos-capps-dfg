@@ -2,14 +2,26 @@
       shell: |
         rhos-release -L | sed -n 2p | tr -d [:space:]
       register: rhos_version
-    - debug:
-      msg: "The remote custom face is {{ ansible_local.custom.rhos.version }} and {{ rhos_version }}"
+    
+    - name: "Print registered rhos version"
+      debug:
+        msg: "The rhos version is {{ rhos_version }}"
+    
     - name: Create the remote directory
       file:
         state: directory
         recurse: yes
         path: "{{ remote_dir }}"
+    
     - name: Install the new facts
       template:
         src: custom.fact.j2
         dest: "{{ remote_dir }}/custom.fact"
+        mode: 0644
+    
+    - name: Reload facts
+      setup: 
+
+    - name: "Print collected custom facts"
+      debug:
+        msg: "The remote custom fact is {{ ansible_local }}"
