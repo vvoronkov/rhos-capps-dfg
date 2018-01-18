@@ -1,0 +1,25 @@
+---
+- name: install pip executable
+  yum:
+    name: python-virtualenv.noarch
+    state: latest
+  become: true
+- name: install gcc executable
+  yum:
+    name: gcc
+    state: latest
+  become: true
+
+- name: create pip directory
+  pip:
+    name: pip
+    virtualenv: /home/stack/ir_venv
+    state: latest
+    virtualenv_site_packages: yes
+- name: install shade
+  pip:
+    name: shade
+    virtualenv: /home/stack/ir_venv
+    state: latest
+    virtualenv_site_packages: yes
+

@@ -1,0 +1,148 @@
+---
+#- include_vars:
+#    file: images.yml
+#    name: images
+
+- name: source the overcloudrc file
+  shell: source "{{ overcloudrc }}"
+
+- import_tasks: auth_old.yml
+- import_tasks: auth_demo.yml
+- import_tasks: pip_setup.yml
+
+- name: set heat images into heat_integrationtests.conf file
+  ini_file:
+    path: "{{ integrationtests_path }}"
+    section: DEFAULT
+    create: yes
+    option: "{{ item.image_key }}"
+    value: "{{ item.image }}"
+  with_items:
+      - {image_key: 'minimal_image_ref', image: 'heat_cirros_image'}
+      - {image_key: 'image_ref', image: 'heat_fedora_image'}
+
+- name: Set heat flavors into heat_integrationtests.conf file
+  ini_file:
+    path: "{{ integrationtests_path }}"
+    section: DEFAULT
+    create: yes
+    option: "{{ item.flavor_key }}"
+    value: "{{ item.flavor }}"
+  with_items:
+      - {flavor_key: 'minimal_instance_type', flavor: 'm1.tiny'}
+      - {flavor_key: 'instance_type', flavor: 'm1.small'}
+
+- name: set testr.conf regex
+  ini_file:
+    path: /home/stack/heat/.testr.conf
+    section: DEFAULT
+    option: group_regex
+    value: heat_integrationtests\.api\.test_heat_api(?:\.|_)([^_]+)
+    mode: 0642
+    backup: yes
+
+- name: download cirros and Fedora images
+  get_url:
+    url: "{{ item.url }}"
+    dest: "{{ item.dest }}"
+  with_items:
+    - {url: "{{ cirros_url }}", dest: "/tmp/{{ cirros_url | basename }}"}
+    - {url: "{{ fedora_url }}", dest: "/tmp/{{ fedora_url | basename }}"}
+- name: upload cirros and Fedora images
+  os_image:
+    auth: "{{ os_creds }}"
+    name: "{{ item.name }}"
+    container_format: bare
+    is_public: yes
+    disk_format: qcow2
+    filename: "{{ item.filename }}"
+    state: present
+    validate_certs: no
+  with_items:
+    - {name: 'heat_cirros_image', filename: "tmp/{{ cirros_url |
+    basename }}"}
+    - {name: 'heat_fedora_image', filename: "tmp/{{ fedora_url |
+    basename }}"}
+- name: Configure heat network on overcloud
+  os_network:
+    validate_certs: no
+    name: heat-net
+    auth: "{{ os_demo }}"
+- name: Configure heat subnet on heat network
+  os_subnet:
+    network_name: heat-net
+    name: heat-subnet
+    cidr: 10.0.5.0/24
+    validate_certs: no
+    auth: "{{ os_demo }}"
+- name: Configure heat router
+  os_router:
+    name: router1
+    auth: "{{ os_demo }}"
+    validate_certs: no
+    interfaces:
+      - heat-subnet
+- name: Configure heat keypair
+  os_keypair:
+    name: heat_keypair
+    validate_certs: no
+    auth: "{{ os_demo }}"
+- name: Configure heat m1.small flavor
+  os_nova_flavor:
+    ram: 2048
+    disk: 7
+    vcpus: 1
+    name: m1.small
+    validate_certs: no
+    auth: "{{ os_creds }}"
+- name: create m1.tiny flavor
+  os_nova_flavor:
+    ram:  512
+    disk: 7
+    vcpus: 1
+    name: m1.tiny
+    validate_certs: no
+    auth: "{{ os_creds }}"
+- name: set group regex into testr.conf
+  ini_file:
+    path: /home/stack/tempest-dir/.testr.conf
+    no_extra_spaces: yes
+    section: DEFAULT
+    option: group_regex
+    value: heat_integrationtests\.api\.test_heat_api(?:\.|_)([^_]+)
+    mode: 0642
+    backup: yes
+- name: add swiftoperator role to demo user
+  shell: |
+    . "{{ overcloudrc }}"
+    openstack role add --user demo --project demo swiftoperator
+  ignore_errors: yes
+- name: Check for the public network
+  os_networks_facts:
+    name: public
+    auth: "{{ os_creds }}"
+    validate_certs: no
+
+- name: Create public network
+  os_network:
+    name: public
+    state: present
+    auth: "{{ os_creds }}"
+    validate_certs: no
+  when: openstack_networks == []
+
+- name: black list functional tests
+  ini_file:
+    path: "{{ integrationtests_path }}"
+    section: DEFAULT
+    option: skip_functional_test_list
+    value: "StackValidationTest, DeleteInProgressTest,RemoteStackTest
+    .test_stack_update, ZaqarEventSinkTest, ZaqarWaitConditionTest,
+    test_reload_on_sighup, TemplateResourceAdoptTest, StackTagTest,
+    OSWaitCondition, PurgeTest, test_signal_queues, AwsStackTest,
+    ZaqarSignalTransportTest, NotificationTest,ReloadOnSighupTest,
+    test_cancel_update_server_with_port, ResourceGroupAdoptTest"
+
+
+
+
