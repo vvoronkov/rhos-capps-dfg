@@ -22,7 +22,7 @@
 
     - name: run tests with testr
       shell: |
-        source /home/stack/overcloudrc
+        source "{{ overcloudrc }}"
         testr init
         testr run heat_integrationtests.functional
       args:

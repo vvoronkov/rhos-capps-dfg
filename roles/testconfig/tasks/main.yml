@@ -1,7 +1,4 @@
 ---
-#- include_vars:
-#    file: images.yml
-#    name: images
 
 - name: source the overcloudrc file
   shell: source "{{ overcloudrc }}"
@@ -9,6 +6,7 @@
 - import_tasks: auth_old.yml
 - import_tasks: auth_demo.yml
 - import_tasks: pip_setup.yml
+- import_tasks: collect_overcloud_vars.yml
 
 - name: set heat images into heat_integrationtests.conf file
   ini_file:
@@ -136,12 +134,37 @@
     path: "{{ integrationtests_path }}"
     section: DEFAULT
     option: skip_functional_test_list
-    value: "StackValidationTest, DeleteInProgressTest,RemoteStackTest
-    .test_stack_update, ZaqarEventSinkTest, ZaqarWaitConditionTest,
+    value: "ZaqarEventSinkTest, ZaqarWaitConditionTest,
     test_reload_on_sighup, TemplateResourceAdoptTest, StackTagTest,
     OSWaitCondition, PurgeTest, test_signal_queues, AwsStackTest,
     ZaqarSignalTransportTest, NotificationTest,ReloadOnSighupTest,
-    test_cancel_update_server_with_port, ResourceGroupAdoptTest"
+    test_cancel_update_server_with_port, ParallelDeploymentsTest,
+    ResourceGroupAdoptTest"
+- name: modify conf file
+  ini_file:
+    path: "{{ integrationtests_path }}"
+    section: DEFAULT
+    option: "{{ item.option }}"
+    value: "{{ item.value }}"
+  with_items:
+    - {option: "username", value: "demo"}
+    - {option: "password", value: "secrete"}
+    - {option: "auth_url", value: "{{ osp_auth.stdout }}"}
+    - {option: "tenant_name", value: "demo"}
+    - {option: "user_domain_name", value: "Default"}
+    - {option: "project_domain_name", value: "Default"}
+    - {option: "region", value: "regionOne"}
+    - {option: "auth.version", value: "2"}
+    - {option: "admin_username", value: "admin"}
+    - {option: "admin_password", value: "{{ osp_password.stdout }}"}
+    - {option: "keypair_name", value: "heat_keypair"}
+    - {option: "iamge_ref", value: "heat_fedora_image"}
+    - {option: "minimal_image", value: "heat_cirros_image"}
+    - {option: "minimal_instance_type", value: "m1.tiny"}
+    - {option: "instance_type", value: "m1.small"}
+    - {option: "image_ssh_user", value: "root"}
+
+
 
 
 
