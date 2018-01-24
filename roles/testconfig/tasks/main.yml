@@ -3,10 +3,12 @@
 - name: source the overcloudrc file
   shell: source "{{ overcloudrc }}"
 
-- import_tasks: auth_old.yml
-- import_tasks: auth_demo.yml
 - import_tasks: pip_setup.yml
 - import_tasks: collect_overcloud_vars.yml
+- import_tasks: auth_old.yml
+- import_tasks: auth_demo.yml
+  vars:
+    ansible_python_interpreter: "/home/stack/ir_venv/bin/python"
 
 - name: set heat images into heat_integrationtests.conf file
   ini_file:
@@ -57,9 +59,9 @@
     state: present
     validate_certs: no
   with_items:
-    - {name: 'heat_cirros_image', filename: "tmp/{{ cirros_url |
+    - {name: 'heat_cirros_image', filename: "/tmp/{{ cirros_url |
     basename }}"}
-    - {name: 'heat_fedora_image', filename: "tmp/{{ fedora_url |
+    - {name: 'heat_fedora_image', filename: "/tmp/{{ fedora_url |
     basename }}"}
 - name: Configure heat network on overcloud
   os_network:
