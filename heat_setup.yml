@@ -1,5 +1,7 @@
 - name: "heat setup"
   hosts: undercloud   
+  roles:
+    - testconfig
   vars:
     ansible_python_interpreter: "/home/stack/ir_venv/bin/python"
   gather_facts: yes
@@ -27,87 +29,5 @@
       when:
         - ansible_local.custom.rhos.version == "10" or ansible_local.custom.rhos.version == "11" or ansible_local.custom.rhos.version == "12"
 
-    - include_vars:
-        file: images.yml
-        name: images
-    - name: download cirros and Fedora images
-      get_url:
-        url: "{{ item.url }}"
-        dest: "{{ item.dest }}"
-      with_items:
-        - {url: "{{ images.cirros_url }}", dest: '/tmp/cirros-0.3.4-x86_64-disk.img' }
-        - {url: "{{ images.fedora_url }}", dest: '/tmp/fedora-cloud-base-25-jenkins.qcow2' }
-    - name: upload cirros and Fedora images
-      os_image:
-        auth: "{{ os_creds }}"
-        name: "{{ item.name }}"
-        container_format: bare
-        is_public: yes
-        disk_format: qcow2
-        filename: "{{ item.filename }}"
-        state: present
-        validate_certs: no
-      with_items:
-        - {name: 'heat_cirros_image', filename: '/tmp/cirros-0.3.4-x86_64-disk.img' }
-        - {name: 'heat_fedora_image', filename: '/tmp/fedora-cloud-base-25-jenkins.qcow2' }
-    - name: Configure heat network on overcloud
-      os_network:
-        validate_certs: no
-        name: heat-net
-        auth: "{{ os_demo }}"
-    - name: Configure heat subnet on heat network
-      os_subnet:
-        network_name: heat-net
-        name: heat-subnet
-        cidr: 10.0.5.0/24
-        validate_certs: no
-        auth: "{{ os_demo }}"
-    - name: Configure heat router
-      os_router:
-        name: router1
-        auth: "{{ os_demo }}"
-        validate_certs: no
-        interfaces:
-          - heat-subnet
-    - name: Configure heat keypair
-      os_keypair:
-        name: heat_keypair
-        validate_certs: no
-        auth: "{{ os_demo }}"
-    - name: Configure heat m1.small flavor
-      os_nova_flavor:
-        ram: 2048
-        disk: 7
-        vcpus: 1
-        name: m1.small
-        validate_certs: no
-        auth: "{{ os_creds }}"
-    - name: create m1.tiny flavor
-      os_nova_flavor:
-        ram:  512
-        disk: 7
-        vcpus: 1
-        name: m1.tiny
-        validate_certs: no
-        auth: "{{ os_creds }}"
-    - name: set group regex into testr.conf
-      ini_file:
-        path: /home/stack/tempest-dir/.testr.conf
-        no_extra_spaces: yes
-        section: DEFAULT
-        option: group_regex
-        value: heat_integrationtests\.api\.test_heat_api(?:\.|_)([^_]+)
-        mode: 0642
-        backup: yes
-    - name: add swiftoperator role to demo user
-      shell: |
-        . /home/stack/overcloudrc
-        openstack role add --user demo --project demo swiftoperator
-    - name: modify nova network to public
-      shell: |
-        . /home/stack/overcloudrc
-        network="$(openstack network show -c name --format value public | tr -d '[:space:]')"
-        if [[ "$network" != "public" ]]; then openstack network set nova --name public; fi
-      ignore_errors: yes
 
 

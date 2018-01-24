@@ -1,0 +1,31 @@
+---
+- name: install and run heat eol tests from upstream
+  hosts: undercloud
+  vars:
+    ansible_python_interpreter: "/home/stack/ir_venv/bin/python"
+  roles:
+    - testconfig
+  tasks:
+    - name: install git repo with tags
+      git:
+        repo: 'git://git.openstack.org/openstack/heat'
+        dest: /home/stack/heat
+        version: tags/mitaka-eol
+        clone: no
+        update: no
+
+
+    - name: run the requirements on virtualenv
+      pip:
+        virtualenv: /home/stack/ir_venv
+        requirements: /home/stack/heat/test-requirements.txt
+
+    - name: run tests with testr
+      shell: |
+        source "{{ overcloudrc }}"
+        testr init
+        testr run heat_integrationtests.functional
+      args:
+        chdir: /home/stack/heat
+
+

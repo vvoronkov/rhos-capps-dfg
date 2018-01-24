@@ -1,0 +1,11 @@
+- name: Register Auth
+  shell: "cat {{ overcloudrc }} | grep AUTH_URL | cut -d '=' -f 2"
+  register: osp_auth
+
+- name: Register User name
+  shell: "cat {{ overcloudrc }} | grep USERNAME | cut -d '=' -f 2"
+  register: osp_username
+
+- name: Register Password
+  shell: "cat {{ overcloudrc }} | grep OS_PASSWORD | cut -d '=' -f 2"
+  register: osp_password
