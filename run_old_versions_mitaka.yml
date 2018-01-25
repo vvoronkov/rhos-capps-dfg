@@ -1,8 +1,6 @@
 ---
 - name: install and run heat eol tests from upstream
   hosts: undercloud
-  vars:
-    ansible_python_interpreter: "/home/stack/ir_venv/bin/python"
   roles:
     - testconfig
   tasks:
