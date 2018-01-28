@@ -21,6 +21,11 @@
       - {image_key: 'minimal_image_ref', image: 'heat_cirros_image'}
       - {image_key: 'image_ref', image: 'heat_fedora_image'}
 
+- name: run the requirements on virtualenv
+    pip:
+      virtualenv: /home/stack/ir_venv
+      requirements: /home/stack/heat/test-requirements.txt
+
 - name: Set heat flavors into heat_integrationtests.conf file
   ini_file:
     path: "{{ integrationtests_path }}"
@@ -31,15 +36,6 @@
   with_items:
       - {flavor_key: 'minimal_instance_type', flavor: 'm1.tiny'}
       - {flavor_key: 'instance_type', flavor: 'm1.small'}
-
-- name: set testr.conf regex
-  ini_file:
-    path: /home/stack/heat/.testr.conf
-    section: DEFAULT
-    option: group_regex
-    value: heat_integrationtests\.api\.test_heat_api(?:\.|_)([^_]+)
-    mode: 0642
-    backup: yes
 
 - name: download cirros and Fedora images
   get_url:
