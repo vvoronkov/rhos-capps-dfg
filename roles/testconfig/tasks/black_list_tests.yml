@@ -1,0 +1,12 @@
+---
+- name: black list functional tests
+  ini_file:
+    path: "{{ integrationtests_path }}"
+    section: DEFAULT
+    option: skip_functional_test_list
+    value: "ZaqarEventSinkTest, ZaqarWaitConditionTest,
+    test_reload_on_sighup, TemplateResourceAdoptTest, StackTagTest,
+    OSWaitCondition, PurgeTest, test_signal_queues, AwsStackTest,
+    ZaqarSignalTransportTest, NotificationTest,ReloadOnSighupTest,
+    test_cancel_update_server_with_port, ParallelDeploymentsTest,
+    ResourceGroupAdoptTest"

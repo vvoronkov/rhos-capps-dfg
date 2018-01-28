@@ -1,14 +1,9 @@
 ---
 
-- name: source the overcloudrc file
-  shell: source "{{ overcloudrc }}"
-
-- import_tasks: pip_setup.yml
-- import_tasks: collect_overcloud_vars.yml
 - import_tasks: auth_old.yml
 - import_tasks: auth_demo.yml
-  vars:
-    ansible_python_interpreter: "/home/stack/ir_venv/bin/python"
+- import_tasks: collect_overcloud_vars.yml
+- import_tasks: pip_setup.yml
 
 - name: set heat images into heat_integrationtests.conf file
   ini_file:
@@ -21,10 +16,6 @@
       - {image_key: 'minimal_image_ref', image: 'heat_cirros_image'}
       - {image_key: 'image_ref', image: 'heat_fedora_image'}
 
-- name: run the requirements on virtualenv
-    pip:
-      virtualenv: /home/stack/ir_venv
-      requirements: /home/stack/heat/test-requirements.txt
 
 - name: Set heat flavors into heat_integrationtests.conf file
   ini_file:
@@ -44,6 +35,7 @@
   with_items:
     - {url: "{{ cirros_url }}", dest: "/tmp/{{ cirros_url | basename }}"}
     - {url: "{{ fedora_url }}", dest: "/tmp/{{ fedora_url | basename }}"}
+
 - name: upload cirros and Fedora images
   os_image:
     auth: "{{ os_creds }}"
@@ -59,11 +51,17 @@
     basename }}"}
     - {name: 'heat_fedora_image', filename: "/tmp/{{ fedora_url |
     basename }}"}
+
+- name: Print os_demo
+  debug:
+    msg: "os_demo is {{ os_demo }}"
+
 - name: Configure heat network on overcloud
   os_network:
     validate_certs: no
     name: heat-net
     auth: "{{ os_demo }}"
+
 - name: Configure heat subnet on heat network
   os_subnet:
     network_name: heat-net
@@ -71,6 +69,7 @@
     cidr: 10.0.5.0/24
     validate_certs: no
     auth: "{{ os_demo }}"
+
 - name: Configure heat router
   os_router:
     name: router1
@@ -126,44 +125,3 @@
     auth: "{{ os_creds }}"
     validate_certs: no
   when: openstack_networks == []
-
-- name: black list functional tests
-  ini_file:
-    path: "{{ integrationtests_path }}"
-    section: DEFAULT
-    option: skip_functional_test_list
-    value: "ZaqarEventSinkTest, ZaqarWaitConditionTest,
-    test_reload_on_sighup, TemplateResourceAdoptTest, StackTagTest,
-    OSWaitCondition, PurgeTest, test_signal_queues, AwsStackTest,
-    ZaqarSignalTransportTest, NotificationTest,ReloadOnSighupTest,
-    test_cancel_update_server_with_port, ParallelDeploymentsTest,
-    ResourceGroupAdoptTest"
-- name: modify conf file
-  ini_file:
-    path: "{{ integrationtests_path }}"
-    section: DEFAULT
-    option: "{{ item.option }}"
-    value: "{{ item.value }}"
-  with_items:
-    - {option: "username", value: "demo"}
-    - {option: "password", value: "secrete"}
-    - {option: "auth_url", value: "{{ osp_auth.stdout }}"}
-    - {option: "tenant_name", value: "demo"}
-    - {option: "user_domain_name", value: "Default"}
-    - {option: "project_domain_name", value: "Default"}
-    - {option: "region", value: "regionOne"}
-    - {option: "auth.version", value: "2"}
-    - {option: "admin_username", value: "admin"}
-    - {option: "admin_password", value: "{{ osp_password.stdout }}"}
-    - {option: "keypair_name", value: "heat_keypair"}
-    - {option: "iamge_ref", value: "heat_fedora_image"}
-    - {option: "minimal_image", value: "heat_cirros_image"}
-    - {option: "minimal_instance_type", value: "m1.tiny"}
-    - {option: "instance_type", value: "m1.small"}
-    - {option: "image_ssh_user", value: "root"}
-
-
-
-
-
-

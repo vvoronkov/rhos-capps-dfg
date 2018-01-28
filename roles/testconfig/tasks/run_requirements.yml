@@ -1,0 +1,5 @@
+---
+- name: Run requirements on old versions setup
+  pip:
+    virtualenv: /home/stack/ir_venv
+    requirements: /home/stack/heat/test-requirements.txt

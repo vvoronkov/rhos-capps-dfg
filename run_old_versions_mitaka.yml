@@ -1,24 +1,28 @@
 ---
 - name: install and run heat eol tests from upstream
   hosts: undercloud
+
   roles:
     - testconfig
   tasks:
-    - name: install git repo with tags
-      git:
-        repo: 'git://git.openstack.org/openstack/heat'
-        dest: /home/stack/heat
-        version: tags/mitaka-eol
-        clone: no
-        update: no
+  - name: install git repo with tags
+    git:
+      repo: 'git://git.openstack.org/openstack/heat'
+      dest: /home/stack/heat
+      version: tags/mitaka-eol
+    ignore_errors: true
 
+  - include_tasks: 'roles/testconfig/tasks/run_requirements.yml'
+  - include_tasks: 'roles/testconfig/tasks/black_list_tests.yml'
+  - include_tasks: 'roles/testconfig/tasks/modify_conf_file.yml'
 
-    - name: run tests with testr
-      shell: |
-        source "{{ overcloudrc }}"
-        testr init
-        testr run heat_integrationtests.functional
-      args:
-        chdir: /home/stack/heat
+  - name: run tests with testr
+    shell: |
+      source "{{ overcloudrc }}"
+      testr init
+      testr run heat_integrationtests.functional
+    args:
+      chdir: /home/stack/heat
+
 
 
