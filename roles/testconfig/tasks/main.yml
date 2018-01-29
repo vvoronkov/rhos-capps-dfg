@@ -1,9 +1,7 @@
 ---
-
+- import_tasks: collect_overcloud_vars.yml
 - import_tasks: auth_old.yml
 - import_tasks: auth_demo.yml
-- import_tasks: collect_overcloud_vars.yml
-- import_tasks: pip_setup.yml
 
 - name: set heat images into heat_integrationtests.conf file
   ini_file:
@@ -51,6 +49,7 @@
     basename }}"}
     - {name: 'heat_fedora_image', filename: "/tmp/{{ fedora_url |
     basename }}"}
+  ansible_python_interpreter: "{{ ansible_python_interpreter }}"
 
 - name: Print os_demo
   debug:
@@ -77,11 +76,13 @@
     validate_certs: no
     interfaces:
       - heat-subnet
+
 - name: Configure heat keypair
   os_keypair:
     name: heat_keypair
     validate_certs: no
     auth: "{{ os_demo }}"
+
 - name: Configure heat m1.small flavor
   os_nova_flavor:
     ram: 2048
@@ -90,6 +91,7 @@
     name: m1.small
     validate_certs: no
     auth: "{{ os_creds }}"
+
 - name: create m1.tiny flavor
   os_nova_flavor:
     ram:  512
@@ -98,6 +100,7 @@
     name: m1.tiny
     validate_certs: no
     auth: "{{ os_creds }}"
+
 - name: set group regex into testr.conf
   ini_file:
     path: /home/stack/tempest-dir/.testr.conf
@@ -107,6 +110,7 @@
     value: heat_integrationtests\.api\.test_heat_api(?:\.|_)([^_]+)
     mode: 0642
     backup: yes
+
 - name: add swiftoperator role to demo user
   shell: |
     . "{{ overcloudrc }}"

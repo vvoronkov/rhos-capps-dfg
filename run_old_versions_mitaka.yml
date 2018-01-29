@@ -1,9 +1,11 @@
 ---
+- import_playbook: 'pip_setup.yml'
 - name: install and run heat eol tests from upstream
   hosts: undercloud
 
   roles:
     - testconfig
+
   tasks:
   - name: install git repo with tags
     git:
