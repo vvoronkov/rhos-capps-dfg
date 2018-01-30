@@ -1,4 +1,3 @@
----
 - name: modify conf file
   ini_file:
     path: "{{ integrationtests_path }}"
@@ -17,8 +16,9 @@
     - {option: "admin_username", value: "admin"}
     - {option: "admin_password", value: "{{ osp_password.stdout }}"}
     - {option: "keypair_name", value: "heat_keypair"}
-    - {option: "iamge_ref", value: "heat_fedora_image"}
-    - {option: "minimal_image", value: "heat_cirros_image"}
-    - {option: "minimal_instance_type", value: "m1.tiny"}
+    - {option: 'image_ref', value: 'heat_fedora_image'}
+    - {option: 'minimal_image_ref', value: 'heat_cirros_image'}
     - {option: "instance_type", value: "m1.small"}
+    - {option: "minimal_instance_type", value: "m1.tiny"}
     - {option: "image_ssh_user", value: "root"}
+

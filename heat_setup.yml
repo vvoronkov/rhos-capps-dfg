@@ -7,28 +7,6 @@
 
   gather_facts: yes
   any_errors_fatal: true
-#  tasks:
-#    - name: Run custom facts
-#      include_tasks: 'roles/testconfig/tasks/custom_facts.yml'
-#      become: yes
-#      become_method: sudo
-#      vars:
-#        remote_dir: /etc/ansible/facts.d
-#        facts_file: custom.fact
-#
-#
-#    - name: Run auth old
-#      include_tasks: 'roles/testconfig/tasks/auth_old.yml'
-#      when:
-#        - ansible_local.custom.rhos.version == "8-director" or ansible_local.custom.rhos.version == "9-director"
-#
-#    - name: run auth
-#      include_tasks: 'roles/testconfig/tasks/auth.yml'
-#      when:
-#        - ansible_local.custom.rhos.version == "10" or ansible_local.custom.rhos.version == "11" or ansible_local.custom.rhos.version == "12"
-
-#    - include_vars: 'roles/testconfig/vars/main.yml'
-#    - include_tasks: 'roles/testconfig/tasks/main.yml'
 
 
 

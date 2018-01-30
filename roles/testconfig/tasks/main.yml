@@ -3,29 +3,6 @@
 - import_tasks: auth_old.yml
 - import_tasks: auth_demo.yml
 
-- name: set heat images into heat_integrationtests.conf file
-  ini_file:
-    path: "{{ integrationtests_path }}"
-    section: DEFAULT
-    create: yes
-    option: "{{ item.image_key }}"
-    value: "{{ item.image }}"
-  with_items:
-      - {image_key: 'minimal_image_ref', image: 'heat_cirros_image'}
-      - {image_key: 'image_ref', image: 'heat_fedora_image'}
-
-
-- name: Set heat flavors into heat_integrationtests.conf file
-  ini_file:
-    path: "{{ integrationtests_path }}"
-    section: DEFAULT
-    create: yes
-    option: "{{ item.flavor_key }}"
-    value: "{{ item.flavor }}"
-  with_items:
-      - {flavor_key: 'minimal_instance_type', flavor: 'm1.tiny'}
-      - {flavor_key: 'instance_type', flavor: 'm1.small'}
-
 - name: download cirros and Fedora images
   get_url:
     url: "{{ item.url }}"
