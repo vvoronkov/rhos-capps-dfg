@@ -1,0 +1,13 @@
+---
+
+- name: Setup heat
+  import_playbook: "heat_setup.yml"
+  when: (test.setup.heat|default(False))
+
+- name: Run old versions mitaka
+  import_playbook: "run_old_versions_mitaka.yml"
+  when: (test.run.mitaka|default(False))
+
+- name: Run old versions liberty
+  import_playbook: "run_old_versions_liberty.yml"
+  when: (test.run.liberty|default(False))
