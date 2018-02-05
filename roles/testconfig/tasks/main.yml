@@ -28,10 +28,6 @@
     basename }}"}
   ansible_python_interpreter: "{{ ansible_python_interpreter }}"
 
-- name: Print os_demo
-  debug:
-    msg: "os_demo is {{ os_demo }}"
-
 - name: Configure heat network on overcloud
   os_network:
     validate_certs: no

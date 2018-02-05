@@ -17,6 +17,17 @@
     - include_tasks: 'roles/testconfig/tasks/black_list_tests.yml'
     - include_tasks: 'roles/testconfig/tasks/modify_conf_file.yml'
 
+    - name: remove the testr from global
+      yum:
+        name: python-testr
+        state: removed
+
+    - name: install by testr pip
+      pip:
+        name: testr
+        virtualenv: /home/stack/ir_venv
+
+
     - name: run tests with testr
       shell: |
         source "{{ overcloudrc }}"
