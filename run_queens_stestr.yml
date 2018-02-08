@@ -74,7 +74,6 @@
     shell: |
       . "{{ overcloudrc }}"
       stestr init
-      stestr
 #      stestr --test-path=heat_integrationtests run
     args:
       chdir: /home/stack/heat
