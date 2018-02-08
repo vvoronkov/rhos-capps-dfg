@@ -6,6 +6,7 @@
         username: demo
         password: secrete
         project_name: demo
+        domain_id: default
         "
     register: creds
   - set_fact:

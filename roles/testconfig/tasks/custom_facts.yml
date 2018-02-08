@@ -8,12 +8,14 @@
         state: directory
         recurse: yes
         path: "{{ remote_dir }}"
+      become: true
     
     - name: Install the new facts
       template:
-        src: custom.fact.j2
+        src: roles/templates/custom.fact.j2
         dest: "{{ remote_dir }}/custom.fact"
         mode: 0644
+      become: true
     
     - name: Reload facts
       setup: 

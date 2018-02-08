@@ -24,9 +24,10 @@
 
     - name: install by testr pip
       pip:
-        name: testr
+        name: testrepository
         virtualenv: /home/stack/ir_venv
 
+    - include_tasks: roles/testconfig/tasks/run_requirements.yml
 
     - name: run tests with testr
       shell: |

@@ -1,14 +1,18 @@
 ---
 - import_tasks: collect_overcloud_vars.yml
 - import_tasks: custom_facts.yml
-  include: auth_old.yml
+- include_tasks: auth_demo_new.yml
   when:
-    - ansible_local.custom.rhos.version == "8-director" or ansible_local
-    .custom.rhos.version == "9-director" or ansible_local.custom.rhos.version == '13'
-  include: auth.yml
+    - ansible_local.custom.rhos.version  == '13'
+- include_tasks: auth_demo.yml
   when:
-    - ansible_local.custom.rhos.version == "10" or ansible_local.custom.rhos
-    .version == "11" or ansible_local.custom.rhos.version == "12"
+    - ansible_local.custom.rhos.version  != '13'
+- include_tasks: auth_old.yml
+  when:
+    - ansible_local.custom.rhos.version == "8-director" or ansible_local.custom.rhos.version == "9-director" or ansible_local.custom.rhos.version == '13'
+- include_tasks: auth.yml
+  when:
+    - ansible_local.custom.rhos.version == "10" or ansible_local.custom.rhos.version == "11" or ansible_local.custom.rhos.version == "12"
 
 - name: download cirros and Fedora images
   get_url:
