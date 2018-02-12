@@ -95,21 +95,17 @@
     mode: 0642
     backup: yes
 
+#todo need to file a bug on Ansible that os_user cannot change its roles
 - name: add swiftoperator role to demo user
   shell: |
     . "{{ overcloudrc }}"
     openstack role add --user demo --project demo swiftoperator
   ignore_errors: yes
-- name: Check for the public network
-  os_networks_facts:
-    name: public
-    auth: "{{ os_creds }}"
-    validate_certs: no
 
-- name: Create public network
-  os_network:
-    name: public
-    state: present
-    auth: "{{ os_creds }}"
-    validate_certs: no
-  when: openstack_networks == []
+#todo remove this hook as soon as RHOSINFRA-1582 resolved
+- name: modify nova network to public
+  shell: |
+    . /home/stack/overcloudrc
+    network="$(openstack network show -c name --format value public | tr -d '[:space:]')"
+    if [[ "$network" != "public" ]]; then openstack network set nova --name public; fi
+  ignore_errors: yes
