@@ -100,16 +100,4 @@
     . "{{ overcloudrc }}"
     openstack role add --user demo --project demo swiftoperator
   ignore_errors: yes
-- name: Check for the public network
-  os_networks_facts:
-    name: public
-    auth: "{{ os_creds }}"
-    validate_certs: no
 
-- name: Create public network
-  os_network:
-    name: public
-    state: present
-    auth: "{{ os_creds }}"
-    validate_certs: no
-  when: openstack_networks == []

@@ -19,19 +19,27 @@
 
     - name: remove the testr from global
       yum:
-        name: python-testr
+        name: python-testrepository
         state: removed
 
     - name: install by testr pip
       pip:
         name: testrepository
         virtualenv: /home/stack/ir_venv
+        virtualenv_site_packages: yes
 
     - include_tasks: roles/testconfig/tasks/run_requirements.yml
+
+    - name: install constraints by pip
+      pip:
+        name: oslotest
+        virtualenv: /home/stack/ir_venv
+        version: 2.0.0
 
     - name: run tests with testr
       shell: |
         source "{{ overcloudrc }}"
+        source /home/stack/ir_venv/bin/activate
         testr init
         testr run heat_integrationtests.functional
       args:

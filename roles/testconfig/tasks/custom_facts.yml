@@ -12,7 +12,7 @@
     
     - name: Install the new facts
       template:
-        src: roles/templates/custom.fact.j2
+        src: custom.fact.j2
         dest: "{{ remote_dir }}/custom.fact"
         mode: 0644
       become: true
