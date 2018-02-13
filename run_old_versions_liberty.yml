@@ -21,6 +21,7 @@
       yum:
         name: python-testrepository
         state: removed
+      become: true
 
     - name: install by testr pip
       pip:
