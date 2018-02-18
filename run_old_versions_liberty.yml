@@ -14,7 +14,25 @@
         version: tags/liberty-eol
 
     - include_tasks: 'roles/testconfig/tasks/run_requirements.yml'
-    - include_tasks: 'roles/testconfig/tasks/black_list_tests.yml'
+
+    #todo remove last 7 last tests as soon as BZ#1546502
+    - name: black list failing tests on RHOS8 (BZ#1546502)
+      ini_file:
+        path: "{{ integrationtests_path }}"
+        section: DEFAULT
+        option: skip_functional_test_list
+        value: "ZaqarEventSinkTest, ZaqarWaitConditionTest,
+        test_reload_on_sighup, TemplateResourceAdoptTest, StackTagTest,
+        OSWaitCondition, PurgeTest, test_signal_queues, AwsStackTest,
+        ZaqarSignalTransportTest, NotificationTest,ReloadOnSighupTest,
+        test_cancel_update_server_with_port, ParallelDeploymentsTest,
+        ResourceGroupAdoptTest, AutoScalingSignalTest.test_scaling_meta_update,
+        AutoScalingSignalTest.test_signal_with_policy_update, AutoScalingSignalTest.test_signal_during_suspend,
+        AutoScalingGroupUpdateWithNoChanges.test_as_group_update_without_resource_changes,
+        UpdateStackTest.test_stack_update_with_replacing_userdata,
+        EncryptionVolTypeTest.test_create_update,
+        AutoScalingGroupUpdateWithNoChanges.test_create_server_with_subnet_fixed_ip_sec_group"
+
     - include_tasks: 'roles/testconfig/tasks/modify_conf_file.yml'
 
     - name: remove the testr from global
