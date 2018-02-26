@@ -102,10 +102,4 @@
     openstack role add --user demo --project demo swiftoperator
   ignore_errors: yes
 
-#todo remove this hook as soon as RHOSINFRA-1582 resolved
-- name: modify nova network to public
-  shell: |
-    . /home/stack/overcloudrc
-    network="$(openstack network show -c name --format value public | tr -d '[:space:]')"
-    if [[ "$network" != "public" ]]; then openstack network set nova --name public; fi
-  ignore_errors: yes
+
