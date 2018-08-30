@@ -6,13 +6,13 @@
     - ansible_local.custom.rhos.version  >= '13'
 - include_tasks: auth_demo.yml
   when:
-    - ansible_local.custom.rhos.version  != '13'
-- include_tasks: auth_old.yml
-  when:
-    - ansible_local.custom.rhos.version == "8-director" or ansible_local.custom.rhos.version == "9-director" or ansible_local.custom.rhos.version == '13'
+    - ansible_local.custom.rhos.version  <= '12'
 - include_tasks: auth.yml
   when:
-    - ansible_local.custom.rhos.version == "10" or ansible_local.custom.rhos.version == "11" or ansible_local.custom.rhos.version == "12"
+    - ansible_local.custom.rhos.version <= "9-director" or ansible_local.custom.rhos.version >= '13'
+- include_tasks: auth_v3.yml
+  when:
+    - ansible_local.custom.rhos.version <= '12' and ansible_local.custom.rhos.version >= '10'
 
 - name: download cirros and Fedora images
   get_url:

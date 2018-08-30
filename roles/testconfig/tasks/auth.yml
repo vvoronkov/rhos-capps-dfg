@@ -1,8 +1,6 @@
   - name: grab auth data from openstackrc file and publish it as YAML
-    vars:
-        overcloud_rc: ~/overcloudrc.v3
     shell: |
-        source {{ overcloud_rc }}
+        source "{{ overcloudrc }}"
         echo "
         auth_url: $OS_AUTH_URL
         username: $OS_USERNAME
