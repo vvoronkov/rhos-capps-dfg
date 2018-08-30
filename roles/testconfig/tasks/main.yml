@@ -3,7 +3,7 @@
 - import_tasks: custom_facts.yml
 - include_tasks: auth_demo_new.yml
   when:
-    - ansible_local.custom.rhos.version  == '13'
+    - ansible_local.custom.rhos.version  >= '13'
 - include_tasks: auth_demo.yml
   when:
     - ansible_local.custom.rhos.version  != '13'
