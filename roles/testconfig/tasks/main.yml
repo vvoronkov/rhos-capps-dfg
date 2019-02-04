@@ -37,8 +37,7 @@
     basename }}"}
     - {name: 'heat_fedora_image', filename: "/tmp/{{ fedora_url |
     basename }}"}
-  ansible_python_interpreter: "{{ ansible_python_interpreter }}"
-
+  
 - name: Configure heat network on overcloud
   os_network:
     validate_certs: no
