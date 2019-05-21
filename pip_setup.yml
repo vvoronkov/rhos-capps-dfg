@@ -6,6 +6,13 @@
         name: python-virtualenv.noarch
         state: latest
       become: true
+      when: ansible_python_version is version('3', '<')
+    - name: install pip executable for Python3
+      yum:
+        name: python3-virtualenv.noarch
+        state: latest
+      become: true
+      when: ansible_python_version is version('3', '>=')
     - name: install gcc executable
       yum:
         name: gcc
@@ -24,4 +31,3 @@
         virtualenv: /home/stack/ir_venv
         state: latest
         virtualenv_site_packages: yes
-
