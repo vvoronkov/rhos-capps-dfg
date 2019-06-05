@@ -1,6 +1,6 @@
 ---
 integrationtests_path: "/home/stack/heat/heat_integrationtests/heat_integrationtests.conf"
-cirros_url: "http://ikook.tlv.redhat.com/gen_images/cloud/cirros-0.3.5-x86_64-disk.img"
+cirros_url: "http://rhos-qe-mirror-tlv.usersys.redhat.com/images/cirros-0.4.0-x86_64-disk.img"
 fedora_url: "http://ikook.tlv.redhat.com/uploads/InfraRed/Images/fedora-cloud-base-25-jenkins.qcow2"
 overcloudrc: "/home/stack/overcloudrc"
 ansible_python_interpreter: "/home/stack/ir_venv/bin/python"
